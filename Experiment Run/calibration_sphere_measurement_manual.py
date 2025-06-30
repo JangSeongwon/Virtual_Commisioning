@@ -54,17 +54,17 @@ if __name__ == "__main__":
         # print(Radius)
 
         Z = np.mean(result_df[1])
-        real_distance = (130 + Z + Radius+0.02)
+        real_distance = (130 + Z + Radius + 0.02)
         # print(real_distance)
-
-        # user_input = input("Measured Distance")
-        # Distance = [user_input]
 
         Measurement = get_current_posj()   
         # print("Robot Jointvalues ", Count, " : ", Measurement)
 
-        Recorder = np.concatenate(([real_distance], [Radius], Measurement))
-        print("Recording", Count, "- Distance: ", real_distance, "Radius: ", Radius, "Joints: ", Measurement)
+        user_input = input("Position in Optical Table: 'X,Y,Z' FORMAT: ")
+        POS = [int(x) for x in user_input.split(',')]
+
+        Recorder = np.concatenate(([real_distance], [Radius], Measurement, POS))
+        print("Recording", Count, "- Distance: ", real_distance, "Radius: ", Radius, "Joints: ", Measurement, "POS", POS)
         Entire_Recording.append(Recorder)
 
         user_input = input("PRESS ENTER FOR Continue Running, 종료 시 'done' 입력")    
