@@ -22,9 +22,6 @@ DR_init.__dsr__id = ROBOT_ID
 DR_init.__dsr__model = ROBOT_MODEL
 from DSR_ROBOT import *
 
-Calibration_sphere_pos = [500, 26, 75]
-Gocator_height = 74.5
-
 cfg = Config()
 go = GocatorInterface(cfg)
 
