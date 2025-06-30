@@ -26,7 +26,9 @@ cfg = Config()
 go = GocatorInterface(cfg)
 
 if __name__ == "__main__":
+    user_input_height = input("Please record height: ")
     Count = 0
+    Placement = 1
     Entire_Recording = []
 
     while True:
@@ -36,7 +38,7 @@ if __name__ == "__main__":
         "Gocator Running"
         go.start() 
         print("waiting for the pcd collection... ")
-        time.sleep(10.0)
+        time.sleep(0.10)
         pcd_list = go.stop() 
         length = len(pcd_list)
         # print(length)
@@ -57,20 +59,29 @@ if __name__ == "__main__":
         Measurement = get_current_posj()   
         # print("Robot Jointvalues ", Count, " : ", Measurement)
 
-        user_input = input("Position in Optical Table: 'X,Y,Z' FORMAT: ")
-        POS = [int(x) for x in user_input.split(',')]
+        # user_input = input("Position in Optical Table: 'X,Y,Z' FORMAT: ")
+        # POS = [int(x) for x in user_input.split(',')]
 
-        Recorder = np.concatenate(([real_distance], [Radius], Measurement, POS))
-        print("Recording", Count, "- Distance: ", real_distance, "Radius: ", Radius, "Joints: ", Measurement, "POS", POS)
+        Recorder = np.concatenate(([real_distance], [Radius], Measurement, [Placement]))
+        print("[Recording]", "Placement:", Placement," Count:", Count, " Distance:", real_distance, " Radius:", Radius, " Joints:", Measurement)
         Entire_Recording.append(Recorder)
 
-        user_input = input("PRESS ENTER FOR Continue Running, 종료 시 'done' 입력")    
+        user_input = input("PRESS ENTER FOR Continue Running, 다시측정시 're', 종료 시 'done' 입력 : ")    
         if user_input.lower() == "done":
             break
-        # Solution_space = get_current_solution_space()
+        
+        if user_input.lower() == "re":
+            Entire_Recording.pop()
+            Count -= 1
+            continue
+
+        if Count % 10 == 0:
+            Count = 0
+            Placement += 1
+
 
     df = pd.DataFrame(Entire_Recording)
     save_dir = "~/catkin_ws/src/doosan-robot/JSW/"
-    save_path = os.path.join(save_dir, "Calibration_Sphere_Measurement.xlsx")
+    save_path = os.path.join(save_dir, "Calibration_Sphere_Measurement_{}.xlsx".format(user_input_height))
     df.to_excel(save_path, index = False)
     
