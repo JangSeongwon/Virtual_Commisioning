@@ -38,44 +38,51 @@ if __name__ == "__main__":
         "Gocator Running"
         go.start() 
         print("waiting for the pcd collection... ")
-        time.sleep(0.10)
+        time.sleep(3.0)
         pcd_list = go.stop() 
         length = len(pcd_list)
         # print(length)
 
-        from Circle_Estimator import CircleEstimator
-        radius_recording = []
-        for i in range(length):
-            circle = CircleEstimator(pcd_list[i]*1000)
-            result_df = circle.fit_and_report()
-            radius_recording.append(result_df[2])
-        Radius = np.mean(radius_recording)
-        # print(Radius)
+        if length != 0:
+            from Circle_Estimator import CircleEstimator
+            radius_recording = []
+            for i in range(length):
+                circle = CircleEstimator(pcd_list[i]*1000)
+                result_df = circle.fit_and_report()
+                radius_recording.append(result_df[2])
+            Radius = np.mean(radius_recording)
+            # print(Radius)
 
-        Z = np.mean(result_df[1])
-        real_distance = (130 + Z + Radius + 0.02)
-        # print(real_distance)
+            # print(result_df[1])
+            Z = np.mean(result_df[1])
+            real_distance = (130 + Z + Radius + 0.015)
+            # print(real_distance)
 
-        Measurement = get_current_posj()   
-        # print("Robot Jointvalues ", Count, " : ", Measurement)
+            Measurement = get_current_posj()   
+            # print("Robot Jointvalues ", Count, " : ", Measurement)
 
-        # user_input = input("Position in Optical Table: 'X,Y,Z' FORMAT: ")
-        # POS = [int(x) for x in user_input.split(',')]
+            # user_input = input("Position in Optical Table: 'X,Y,Z' FORMAT: ")
+            # POS = [int(x) for x in user_input.split(',')]
 
-        Recorder = np.concatenate(([real_distance], [Radius], Measurement, [Placement]))
-        print("[Recording]", "Placement:", Placement," Count:", Count, " Distance:", real_distance, " Radius:", Radius, " Joints:", Measurement)
-        Entire_Recording.append(Recorder)
+            Recorder = np.concatenate(([real_distance], [Radius], Measurement, [Placement]))
+            print("[Recording]", "Placement:", Placement," Count:", Count, " Distance:", real_distance, " Radius:", Radius, " Joints:", Measurement)
+            Entire_Recording.append(Recorder)
 
-        user_input = input("PRESS ENTER FOR Continue Running, 다시측정시 're', 종료 시 'done' 입력 : ")    
+        user_input = input("PRESS ENTER FOR Continue Running, 다시 측정시 're', 잘못 측정시 'again',종료 시 'done' 입력 : ")
+        print(Count)    
         if user_input.lower() == "done":
             break
-        
+
+        if user_input.lower() == "again":
+            Count -= 1
+            continue
+
         if user_input.lower() == "re":
             Entire_Recording.pop()
             Count -= 1
             continue
 
-        if Count % 10 == 0:
+        if Count % 3 == 0:
             Count = 0
             Placement += 1
 
